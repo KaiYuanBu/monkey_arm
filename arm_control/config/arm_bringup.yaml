@@ -1,0 +1,13 @@
+/arm/b1:
+  ros__parameters:
+    can_id: 71
+    can_channel: can0
+    # can_baudrate: 2000000
+    can_bitrate: 500000
+
+/arm/b2:
+  ros__parameters:
+    can_id: 72
+    can_channel: can0
+    # can_baudrate: 2000000
+    can_bitrate: 500000

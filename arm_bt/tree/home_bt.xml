@@ -1,0 +1,41 @@
+<root BTCPP_format="4" main_tree_to_execute = "Home">
+    <BehaviorTree ID="Home">
+        <Sequence>
+            <!-- Get current position of all actuators -->
+            <Parallel>
+                <GetPositionService name="B0" service_name="/arm/b0/GetPosition" position="{b0_position}"/>
+                <GetPositionService name="B1" service_name="/arm/b1/GetPosition" position="{b1_position}"/>
+                <GetPositionService name="B2" service_name="/arm/b2/GetPosition" position="{b2_position}"/>
+            </Parallel>
+            <Parallel>
+                <!-- Boom 2 not at home? -->
+                <Precondition if="b2_position>0.01" else="SUCCESS">
+                    <!-- Home Boom 2 -->
+                    <SetPositionAction name="B2" action_name="/arm/b2/SetPosition" target="0"/>
+                </Precondition>
+                <Sequence>
+                    <!-- Bearing not at home? -->
+                    <Precondition if="b0_position>0.1 || b0_position<-0.1" else="SUCCESS">
+                        <Sequence>
+                            <!-- Boom 1 blocking (< 0.05m)? -->
+                            <Precondition if="b1_position<0.05" else="FAILURE">
+                                <!-- Raise Boom 1 to 0.05m -->
+                                <SetPositionAction name="B1" action_name="/arm/b1/SetPosition" target="0.05"/>
+                            </Precondition>
+                            <!-- Home Bearing -->
+                            <SetPositionAction name="B0" action_name="/arm/b0/SetPosition" target="0"/>
+                            <!-- Home Boom 1 -->
+                            <SetPositionAction name="B1" action_name="/arm/b1/SetPosition" target="0"/>
+                        </Sequence>
+                    </Precondition>
+                    <!-- At this stage bearing will always be at home -->
+                    <!-- Boom 1 not at home? -->
+                    <Precondition if="b1_position>0.01" else="SUCCESS">
+                        <!-- Home Boom 1 -->
+                        <SetPositionAction name="B1" action_name="/arm/b1/SetPosition" target="0"/>
+                    </Precondition>
+                </Sequence>
+            </Parallel>
+        </Sequence>
+    </BehaviorTree>
+</root>

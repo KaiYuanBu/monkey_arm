@@ -1,0 +1,40 @@
+<root BTCPP_format="4" main_tree_to_execute = "Target">
+    <BehaviorTree ID="Target">
+        <Sequence>
+            <!-- Get current position of all actuators -->
+            <Parallel>
+                <GetPositionService name="B0" service_name="/arm/b0/GetPosition" position="{b0_position}"/>
+                <GetPositionService name="B1" service_name="/arm/b1/GetPosition" position="{b1_position}"/>
+                <GetPositionService name="B2" service_name="/arm/b2/GetPosition" position="{b2_position}"/>
+            </Parallel>
+            <!-- Calculate inverse kinematics -->
+            <InverseKinematicsService service_name="calculate"
+                target_x="{target_x}" target_y="{target_y}" target_z="{target_z}"
+                b0_target="{b0_target}" b1_target="{b1_target}" b2_target="{b2_target}"/>
+            <Parallel>
+                <!-- Set Boom 2 to target -->
+                <SetPositionAction name="B2" action_name="/arm/b2/SetPosition" target="{b2_target}"/>
+                <Fallback>
+                    <!-- Boom 1 blocking (< 0.05m)? -->
+                    <Precondition if="b1_position<0.05" else="FAILURE">
+                        <Sequence>
+                            <!-- Set Boom 1 to 0.05m -->
+                            <SetPositionAction name="B1" action_name="/arm/b1/SetPosition" target="0.05"/>
+                            <Parallel>
+                                <SetPositionAction name="B0" action_name="/arm/b0/SetPosition" target="{b0_target}"/>
+                                <SetPositionAction name="B1" action_name="/arm/b1/SetPosition" target="{b1_target}"/>
+                            </Parallel>
+                        </Sequence>
+                    </Precondition>
+
+                    <!-- Boom 1 not blocking (> 0.05m) -->
+                    <Parallel>
+                        <SetPositionAction name="B0" action_name="/arm/b0/SetPosition" target="{b0_target}"/>
+                        <SetPositionAction name="B1" action_name="/arm/b1/SetPosition" target="{b1_target}"/>
+                    </Parallel>
+
+                </Fallback>
+            </Parallel>
+        </Sequence>
+    </BehaviorTree>
+</root>

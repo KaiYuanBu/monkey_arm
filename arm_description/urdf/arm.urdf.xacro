@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:macro name="arm" params="parent child xyz rpy">
+    <!-- Bearing link -->
+    <link name="${child}">
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 -1.5708" />
+        <geometry>
+          <mesh
+            filename="package://arm_description/meshes/bearing_link.STL" />
+        </geometry>
+        <material
+          name="yellow">
+          <color
+            rgba="1 1 0 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 -1.5708" />
+        <geometry>
+          <mesh
+            filename="package://arm_description/meshes/bearing_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- base link to bearing link joint -->
+    <joint name="${parent}_to_${child}_joint" type="fixed">
+      <origin xyz="${xyz}" rpy="${rpy}" />
+      <parent link="${parent}" />
+      <child link="${child}" />
+    </joint>
+
+    <!-- arm base link -->
+    <link
+      name="arm_base_link">
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="1.5708 0 1.5708" />
+        <geometry>
+          <mesh
+            filename="package://arm_description/meshes/base_link.STL" />
+        </geometry>
+        <material
+          name="yellow">
+          <color
+            rgba="1 1 0 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="1.5708 0 1.5708" />
+        <geometry>
+          <mesh
+            filename="package://arm_description/meshes/base_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- bearing-base joint -->
+    <joint
+      name="bearing_base_joint"
+      type="revolute">
+      <origin
+        xyz="0 0 0.1079"
+        rpy="0 0 0" />
+      <parent
+        link="bearing_link" />
+      <child
+        link="arm_base_link" />
+      <axis
+        xyz="0 0 1" />
+      <limit
+        lower="-3.1416"
+        upper="3.1416"
+        effort="0"
+        velocity="1" />
+    </joint>
+
+    <!-- boom 1-->
+    <link
+      name="boom1_link">
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 1.5708" />
+        <geometry>
+          <mesh
+            filename="package://arm_description/meshes/boom1_link.STL" />
+        </geometry>
+        <material
+          name="yellow">
+          <color
+            rgba="1 1 0 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 1.5708" />
+        <geometry>
+          <mesh
+            filename="package://arm_description/meshes/boom1_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- base boom1 joint -->
+    <joint
+      name="base_boom1_joint"
+      type="revolute">
+      <origin
+        xyz="0.14105 0 0.385"
+        rpy="0 0 0" />
+      <parent
+        link="arm_base_link" />
+      <child
+        link="boom1_link" />
+      <axis
+        xyz="0 1 0" />
+      <limit
+        lower="1.5708"
+        upper="3.1416"
+        effort="0"
+        velocity="1" />
+    </joint>
+
+    <!-- boom 2 link -->
+    <link
+      name="boom2_link">
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 1.5708" />
+        <geometry>
+          <mesh
+            filename="package://arm_description/meshes/boom2_link.STL" />
+        </geometry>
+        <material
+          name="yellow">
+          <color
+            rgba="1 1 0 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 1.5708" />
+        <geometry>
+          <mesh
+            filename="package://arm_description/meshes/boom2_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- boom1 boom2 joint -->
+    <joint
+      name="boom1_boom2_joint"
+      type="revolute">
+      <origin
+        xyz="-0.38465 0 -2.64969"
+        rpy="0 0 0" />
+      <parent
+        link="boom1_link" />
+      <child
+        link="boom2_link" />
+      <axis
+        xyz="0 1 0" />
+      <limit
+        lower="-1.5708"
+        upper="0"
+        effort="0"
+        velocity="1" />
+    </joint>
+  </xacro:macro>
+</robot>
