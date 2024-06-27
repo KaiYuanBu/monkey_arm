@@ -1,7 +1,7 @@
 
 # monkey_arm
 
-ROS2 packages for MonKey Arm module.
+ROS2 Packages for Monkey Arm Development by BKY
 
 
 ## Installation
@@ -32,6 +32,17 @@ docker run --rm -it --name monkey-arm --user monkey -v $PWD/.:/home/monkey/arm_w
 ### Linux
 ```bash
 docker run --rm -it --name monkey-arm --user monkey -v $PWD/.:/home/monkey/arm_ws/src -e DISPLAY=$DISPLAY -e LIBGL_ALWAYS_INDIRECT=0 monkey/humble/arm bash
+```
+
+# SocketCAN:
+
+```bash
+
+sudo ip link set can0 up type can bitrate 500000
+sudo ip link set can0 txqueuelen 1000
+sudo ip link set up can0
+candump can0
+
 ```
 
 ## Authors
