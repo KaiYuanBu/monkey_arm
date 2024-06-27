@@ -48,4 +48,4 @@ candump can0
 ## Authors
 
 - [@LocoHao](https://github.com/LocoHao)
-
+- Edited by [@KaiYuanBu](https://github.com/KaiYuanBu)
