@@ -26,8 +26,8 @@ RUN mv BehaviorTree.CPP behaviortree_cpp
 # Building BTCPP using cmake and make
 WORKDIR ${HOME_DIR}/dep_ws/src/behaviortree_cpp
 RUN mkdir build ; cd build
-RUN cmake ..
-    && make
+RUN cmake .. \
+    && make \
     && sudo install make
 
 # Reverting back the BTROS2 that does not use generate_parameters_library
