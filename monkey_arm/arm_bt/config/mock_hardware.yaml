@@ -1,0 +1,11 @@
+/arm/b0:
+  ros__parameters:
+    position: 45.0
+
+/arm/b1:
+  ros__parameters:
+    position: 0.3
+
+/arm/b2:
+  ros__parameters:
+    position: 0.3

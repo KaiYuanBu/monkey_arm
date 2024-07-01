@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="Arm">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-8.2618E-06 0.1277 0.046156"
+        rpy="0 0 0" />
+      <mass
+        value="16.465" />
+      <inertia
+        ixx="0.2163"
+        ixy="-1.8162E-09"
+        ixz="-1.0913E-09"
+        iyy="0.12127"
+        iyz="-0.055031"
+        izz="0.1752" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_control/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.52941 0.54902 0.54902 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_control/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="boom1_link">
+    <inertial>
+      <origin
+        xyz="-4.7901E-06 0.046055 -1.5726"
+        rpy="0 0 0" />
+      <mass
+        value="52.538" />
+      <inertia
+        ixx="20.62"
+        ixy="-6.9625E-09"
+        ixz="1.8494E-09"
+        iyy="20.414"
+        iyz="0.039229"
+        izz="0.2651" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_control/meshes/boom1_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.69804 0.69804 0.69804 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_control/meshes/boom1_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="base_boom1_joint"
+    type="revolute">
+    <origin
+      xyz="0 0.383 0.14105"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="boom1_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="0"
+      upper="1.5708"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="boom2_link">
+    <inertial>
+      <origin
+        xyz="-1.2248E-06 -0.00011414 1.3628"
+        rpy="0 0 0" />
+      <mass
+        value="20.893" />
+      <inertia
+        ixx="11.689"
+        ixy="-2.4E-10"
+        ixz="2.4101E-09"
+        iyy="11.69"
+        iyz="-0.011609"
+        izz="0.024708" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_control/meshes/boom2_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_control/meshes/boom2_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="boom1_boom2_joint"
+    type="revolute">
+    <origin
+      xyz="0 0.38465 -2.6497"
+      rpy="0 0 0" />
+    <parent
+      link="boom1_link" />
+    <child
+      link="boom2_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="0"
+      upper="1.5708"
+      effort="0"
+      velocity="0" />
+  </joint>
+</robot>

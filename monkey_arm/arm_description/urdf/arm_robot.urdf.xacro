@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<robot name="arm_robot" xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:include filename="$(find arm_description)/urdf/arm.urdf.xacro"/>
+
+  <link name="base_link"/>
+
+  <xacro:arm parent="base_link" child="bearing_link" xyz="0 0 0" rpy="0 0 0" />
+
+</robot>
