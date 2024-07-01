@@ -94,6 +94,9 @@ class CylinderInterface(Node):
         """Callback for set extension action."""
         self.get_logger().info("Executing goal...")
 
+        self.driver.position_mode_set_accel_decel(1, 1, False)
+        self.driver.position_mode_set_speed(3000, False)
+
         self.driver.set_extension(goal_handle.request.target, 10, False)
 
         prev_time = time.time()
@@ -131,9 +134,11 @@ class CylinderInterface(Node):
     def home_request_callback(self, request, response):
         """Callback for homing request service."""
         self.get_logger().info("Initiating Homing Procedure for Monkey Arm ...")
+        self.driver.position_mode_set_accel_decel(3, 3, True)
+        self.driver.position_mode_set_speed(800, True)
 
         self.get_logger().info(f"{self.get_name()} : Calibrating Home Position...")
-        self.driver.set_extension(-0.4, 10, True) # wait argument must be True
+        self.driver.set_extension(-0.4, 30, True) # wait argument must be True
         time.sleep(0.5)
         self.driver.clear_position()
 

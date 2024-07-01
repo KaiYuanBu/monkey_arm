@@ -38,13 +38,14 @@ class RegisterAddress(Enum):
     # One to one write. Data is not stored when powered off.
     SERVO_START_STOP = 0x00 # Start/stop servo
     CONTROL_MODE = 0x02 # Control mode selection
-    TARGET_SPEED = 0x06 # Target speed (RPM) = write_value / 8192 * 3000
+    TARGET_SPEED = 0x06 # (Target speed (RPM)/3000)*8192 = write_value
     TARGET_FORCE = 0x08 # Target force in current (A)
     GROUP_ID = 0x0b # CAN group ID
     REPORT_INTERVAL = 0x0C # Status report interval in milliseconds
     CAN_ID = 0x0D # Servo driver's CAN ID
     REPORT_CONTENT = 0x2E # Status report content
-    POSITIONAL_MODE_ACCELERATION_TIME = 0x09 # Acceleration / Decceleration time
+    POSITIONAL_MODE_ACCELERATION_TIME = 0x09 # Position Mode Acceleration / Decceleration time
+    SPEED_IN_POSITION_MODE = 0x1D # Speed setting in Position Mode = (write_value / 8192) * 3000RPM
     TARGET_POSITION_MSB = 0x50 # Set target position 16bit MSB
     TARGET_POSITION_LSB = 0x05 # Set target position 16bit LSB
     CURRENT_POSITION_MSB = 0x3C # Target position 16bit MSB
@@ -436,6 +437,84 @@ class IDSServoDriver(can.listener.Listener):
         # Create and send CAN message to driver
         self.write_request(data, wait)
 
+    def set_speed_control_mode(self, wait:bool=False):
+        """Set control mode to speed control mode."""
+        data = [
+            self.group_id, # Driver's group ID
+            FunctionCode.OTO_WRITE_SEND.value, # Function code
+            RegisterAddress.SERVO_START_STOP.value, # Register 1 (Servo start/stop)
+            0x00, # N/A
+            0x00, # Stop servo
+            RegisterAddress.CONTROL_MODE.value, # Register 2 (Control mode selection)
+            0x00, # N/A
+            0xC4, # Speed control mode
+        ]
+
+        # Create and send CAN message to driver
+        self.write_request(data, wait)
+
+    def position_mode_set_speed(self, speed:int, wait:bool=False):
+        """Set speed in position control mode."""
+
+        # Convert extension in metre to encoder count
+        converted_speed = int((speed / 3000) * 8192)
+
+        data = [
+            self.group_id, # Driver's group ID
+            FunctionCode.OTO_WRITE_SEND.value, # Function code
+            RegisterAddress.SPEED_IN_POSITION_MODE.value, # Register 1 (Speed of Position Control Mode)
+            (converted_speed>>8)&0xFF, # MSB
+            (converted_speed)&0xFF, # LSB
+            0xFF, # N/A
+            0x00, # N/A
+            0x00, # N/A
+        ]
+
+        # Create and send CAN message to driver
+        self.write_request(data, wait)
+
+    def position_mode_set_accel_decel(self, accel_time:int, decel_time:int, wait:bool=False):
+        """Set acceleration/deceleration time (1 = 100ms) in position control mode.
+        args:
+            accel_time / decel_time is in seconds
+        """
+
+        converted_accel_time = accel_time * 10
+        converted_decel_time = decel_time * 10
+
+        data = [
+            self.group_id, # Driver's group ID
+            FunctionCode.OTO_WRITE_SEND.value, # Function code
+            RegisterAddress.POSITIONAL_MODE_ACCELERATION_TIME.value, # Register 1
+            converted_accel_time&0xFF, # Acceleration Time
+            converted_decel_time&0xFF, # Deceleration TIme
+            0xFF, # N/A
+            0x00, # N/A
+            0x00, # N/A
+        ]
+
+        # Create and send CAN message to driver
+        self.write_request(data, wait)
+
+            ### NOT SURE WHAT THE Z-SIGNAL DOES ###
+
+    # def z_signal_machinery_origin(self, wait:bool=False):
+    #     """Slowly rotates the motor until it finds z-signal at home position"""
+
+    #     data = [
+    #         self.group_id, # Driver's group ID
+    #         FunctionCode.OTO_WRITE_SEND.value, # Function code
+    #         RegisterAddress.TARGET_HOME.value, # Register 1 (Finding Z signal)
+    #         0x00, # N/A
+    #         0x00, # 
+    #         0xFF, # Register 2 (N/A)
+    #         0x00, # N/A
+    #         0x00, # N/A
+    #     ]
+
+    #     # Create and send CAN message to driver
+    #     self.write_request(data, wait)
+
     def clear_position(self, wait:bool=False):
         """Clear the position value of the linear actuator back to 0.
         
@@ -497,7 +576,11 @@ def main(args=None):
     time.sleep(0.5)
     print("Set positional control mode")
     d1.set_positional_control_mode()
+    d1.position_mode_set_speed(500) #OK
+    d1.position_mode_set_accel_decel(2) # CODE SETTING WRONG (RETHINK)
     # d2.set_positional_control_mode()
+
+    # d1.z_signal_machinery_origin() #DOES NOT WORK
 
     time.sleep(0.5)
     # d1.enable()
@@ -508,7 +591,7 @@ def main(args=None):
     # d2.read_extension()
 
     print("Extend 0.1m")
-    d1.set_extension(-0.1, 8, False)
+    d1.set_extension(0.0, 8, False)
     # d2.set_extension(0.1, 8, False)
     # Wait until both actuators reached target
     while (d1.is_running): #or d2.is_running):
@@ -519,11 +602,11 @@ def main(args=None):
     d1.read_extension()
     # d2.read_extension()
     time.sleep(0.5)
-    d1.clear_position()
+    # d1.clear_position()
     # d2.clear_position()
 
-    d1.read_extension()
-    time.sleep(0.5)
+    # d1.read_extension()
+    # time.sleep(0.5)
     # d2.read_extension()
 
     # print("Extend 0m")

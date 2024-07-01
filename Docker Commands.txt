@@ -1,0 +1,6 @@
+Docker Commands
+
+docker compose -f compose.windows.yaml build
+docker compose -f compose.windows.yaml exec monkey-test
+docker compose -f compose.windows.yaml up -d
+docker compose -f compose.windows.yaml exec monkey-test bash

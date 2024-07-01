@@ -5,59 +5,64 @@ RUN apt-get update \
     && apt-get install -y \
     python3-pip \
     cmake \
-    # ros-humble-behaviortree-cpp \
+    libzmq3-dev \
+    libboost-dev \
+    ros-humble-behaviortree-cpp \
     && pip install python-can[serial] \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user
-ARG USERNAME=monkey
-USER $USERNAME
+# ARG USERNAME=monkey
+# USER $USERNAME
 
-ARG HOME_DIR=/home/${USERNAME}
+ARG HOME_DIR=/root
 
 # Clone BTCPP and BTROS2 and build dep_ws
 WORKDIR ${HOME_DIR}/dep_ws/src
-RUN git clone https://github.com/BehaviorTree/BehaviorTree.CPP.git
 RUN git clone https://github.com/BehaviorTree/BehaviorTree.ROS2.git -b humble
 
-# Renaming BehaviorTree.CPP --> behaviortree_cpp (so BTROS2 can find the package)
-RUN mv BehaviorTree.CPP behaviortree_cpp
+# == ---------------------------------------------------------- == #
+# == NO NEED THIS PART BECAUSE HAVE ros-humble-behaviortree-cpp == #
+
+# RUN git clone https://github.com/BehaviorTree/BehaviorTree.CPP.git
+# RUN mv BehaviorTree.CPP behaviortree_cpp
 
 # Building BTCPP using cmake and make
-WORKDIR ${HOME_DIR}/dep_ws/src/behaviortree_cpp
-RUN mkdir build ; cd build
-RUN cmake .. \
-    && make \
-    && sudo install make
+# WORKDIR ${HOME_DIR}/dep_ws/src/behaviortree_cpp
+# RUN mkdir build
+
+# WORKDIR ${HOME_DIR}/dep_ws/src/behaviortree_cpp/build
+# RUN cmake .. \
+#     && make \
+#     && sudo make install
+
+# == ---------------------------------------------------------- == #
 
 # Reverting back the BTROS2 that does not use generate_parameters_library
 WORKDIR ${HOME_DIR}/dep_ws/src/BehaviorTree.ROS2
-RUN git reset --hard 374edcf
-
-# Source and build BTROS2
-RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
+RUN git reset --hard ce923e1 \
+    && . /opt/ros/${ROS_DISTRO}/setup.sh \
     && colcon build
-
-# WORKDIR ${HOME_DIR}/dep_ws/src
-# RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
-#     && cd ${HOME_DIR}/dep_ws/ \
-#     && colcon build
+    # Set up .bashrc scripts
+RUN echo "source /root/dep_ws/src/BehaviorTree.ROS2/install/setup.bash" >> /root/.bashrc
 
 # Copy and build arm_ws
-RUN mkdir /home/${USERNAME}/arm_ws/
+RUN mkdir /root/arm_ws/
+COPY monkey_arm /root/arm_ws/src
 
-COPY . /home/${USERNAME}/arm_ws/src
+WORKDIR ${HOME_DIR}/arm_ws/src
+
+# WORKDIR ${HOME_DIR}/arm_ws/src
 
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
-    && . ${HOME_DIR}/dep_ws/install/setup.sh \
-    && cd /home/${USERNAME}/arm_ws/ \
+    && . /root/dep_ws/src/BehaviorTree.ROS2/install/setup.sh \
     && colcon build
-
-USER root
+   
+# USER root
 
 # Set up .bashrc scripts
-RUN echo "source /home/${USERNAME}/arm_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc
+RUN echo "source /root/arm_ws/src/install/setup.bash" >> /root/.bashrc
 
-WORKDIR /home/${USERNAME}
+WORKDIR /root
 
 CMD ["bash"]

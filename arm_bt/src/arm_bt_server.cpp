@@ -431,7 +431,7 @@ const char* home_xml = R"(
                     <Precondition if="b2_position>0.01" else="SUCCESS">
                         <Sequence>
                             <!-- Bearing not at home? -->
-                            <Precondition if="b0_position>0.1 || b0_position<-0.1" else="SUCCESS">
+                            <Precondition if="b0_position>0.1 || b0_position<0" else="SUCCESS">
                                 <!-- Home Bearing -->
                                 <SetTargetAction name="B0" action_name="/arm/b0/SetTarget" target="0"/>
                             </Precondition>
@@ -440,7 +440,7 @@ const char* home_xml = R"(
                         </Sequence>
                     </Precondition>
                     <!-- Bearing not at home? -->
-                    <Precondition if="b0_position>0.1 || b0_position<-0.1" else="SUCCESS">
+                    <Precondition if="b0_position>0.1 || b0_position<0" else="SUCCESS">
                         <Sequence>
                             <!-- Boom 2 blocking (< 0.05m)? -->
                             <Precondition if="b2_position<0.05" else="FAILURE">

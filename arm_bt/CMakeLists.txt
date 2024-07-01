@@ -8,6 +8,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(behaviortree_cpp REQUIRED)
 find_package(behaviortree_ros2 REQUIRED)
 find_package(action_tutorials_interfaces REQUIRED)
 find_package(btcpp_ros2_interfaces REQUIRED)
@@ -16,6 +17,7 @@ find_package(arm_interfaces REQUIRED)
 
 set(THIS_PACKAGE_DEPS
     rclcpp
+    behaviortree_cpp
     behaviortree_ros2
     action_tutorials_interfaces
     btcpp_ros2_interfaces
@@ -61,10 +63,7 @@ endif()
 
 # Export dependencies
 ament_export_dependencies(
-  behaviortree_ros2
-  btcpp_ros2_interfaces
-  std_srvs
-  arm_interfaces
+  ${THIS_PACKAGE_DEPS}
 )
 
 ament_package()
